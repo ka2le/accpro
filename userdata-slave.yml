@@ -1,0 +1,14 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+    - git
+    - python-pip
+    - python-swiftclient
+
+runcmd:
+    - pip install celery
+    - git clone https://github.com/ka2le/accpro.git /home/ubuntu/accpro
+    - cd /home/ubuntu/accpro
+    - export master_ip="130.238.29.165"
