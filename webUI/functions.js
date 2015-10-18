@@ -38,7 +38,16 @@ function startSimulation(){
 	var nrAngle = document.getElementById("nrAngle").value;
 	var nodes = document.getElementById("nodes").value;
 	var levels = document.getElementById("levels").value;
-	print("startAngle: "+ startAngle)
+	print("startAngle: "+ startAngle);
+	$.post("flask.php",{
+	startAngle:startAngle,
+	endAngle:endAngle,
+	nrAngle:nrAngle,
+	nodes:nodes,
+	levels:levels
+	},function(data){
+		console.log(data);
+	});
 	/* $.ajax({
             type: "GET",
             url: "http://script/Root" + "/ourApp/",
