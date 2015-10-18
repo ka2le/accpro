@@ -9,6 +9,6 @@ packages:
 
 runcmd:
     - pip install celery
-    - git clone https://github.com/ka2le/accpro.git /home/ubuntu/accpro
+    - git clone -b elias https://github.com/ka2le/accpro.git /home/ubuntu/accpro
     - cd /home/ubuntu/accpro
     - export master_ip="130.238.29.165"
