@@ -6,9 +6,12 @@ packages:
     - git
     - python-pip
     - python-swiftclient
+    - python-virtualenv
 
 runcmd:
     - pip install celery
+    - virtualenv --no-site-packages venv
+    - source venv/bin/activate
     - git clone -b elias https://github.com/ka2le/accpro.git /home/ubuntu/accpro
     - cd /home/ubuntu/accpro
     - export master_ip=
