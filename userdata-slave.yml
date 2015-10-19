@@ -13,6 +13,6 @@ runcmd:
     - cd /home/ubuntu/accpro
     - export master_ip=
     - export C_FORCE_ROOT="true"
-    - export LC_ALL=C
+    - export LC_ALL="en_US.UTF-8"
     - chmod +x convert.sh
     - celery worker -l info -A tasks
