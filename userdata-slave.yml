@@ -14,5 +14,5 @@ runcmd:
     - export master_ip=
     - export C_FORCE_ROOT="true"
     - export LC_ALL=C
-    - chmod +x convert.sh
-    - sudo -H -u ubuntu bash -c "celery worker -l info -A tasks"
+    - chmod 777 convert.sh
+    - celery worker -l info -A tasks
