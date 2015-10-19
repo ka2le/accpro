@@ -13,4 +13,5 @@ runcmd:
     - cd /home/ubuntu/accpro
     - export master_ip=
     - export C_FORCE_ROOT="true"
+    - export LC_ALL=C
     - celery worker -l info -A tasks
