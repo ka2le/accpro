@@ -23,7 +23,9 @@ def create_slaves(n_workers):
     image = nc.images.find(id='59a19f79-f906-44e0-964a-22d66558cc54')
     flavor = nc.flavors.find(name='m1.medium')
     network = nc.networks.find(label='ACC-Course-net')
-    userdata = open('userdata-slave.yml', 'r')
+    
+    with open('userdata-slave.yml', 'r') as ud:
+        userdata = ud.read()
 
     with open(os.path.expanduser(master_key_pub_path)) as fpubkey:
         pubkey = fpubkey.read()
