@@ -12,7 +12,9 @@ def airfoil(angle):
 
 	print "Converting the generated mesh files to xml"
 	mesh_files = glob.glob('msh/*.msh')
+	print "Mesh files to convert: " + str(mesh_files)
 	for mesh in mesh_files:
+		print "Converting " + mesh
 		subprocess.check_call("dolfin-convert " + mesh + ' ' + mesh[:-3] + 'xml', shell=True)
 
 	print "Run airfiol on every xml file"

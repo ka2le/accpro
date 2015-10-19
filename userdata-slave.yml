@@ -11,6 +11,6 @@ runcmd:
     - pip install celery
     - git clone -b elias https://github.com/ka2le/accpro.git /home/ubuntu/accpro
     - cd /home/ubuntu/accpro
-    - export master_ip="130.238.29.165"
+    - export master_ip=
     - export C_FORCE_ROOT="true"
     - celery worker -l info -A tasks
