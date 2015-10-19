@@ -22,7 +22,7 @@ def airfoil(angle):
 	xml_files = glob.glob('msh/*.xml')
 	for xml in xml_files:
 		try:
-			check_output(["./navier_stokes_solver/airfoil", "10", "0.0001", "10.", "1", "./" + xml])
+			check_call("export LC_ALL=C;./navier_stokes_solver/airfoil 10 0.0001 10. 1 ./" + xml, shell=True)
 		except CalledProcessError as e:
 			print e.returncode
 
