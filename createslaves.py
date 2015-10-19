@@ -28,7 +28,7 @@ def create_slaves(n_workers):
     with open(os.path.expanduser(master_key_pub_path)) as fpubkey:
         pubkey = fpubkey.read()
         for n in range(0, n_workers):
-            worker_id = 'lundestance' + str(n)
+            worker_id = 'lundestance-slave' + str(n)
             worker_key_id = 'lundekey' + str(n)
             if not nc.keypairs.findall(name=worker_id):
                 nc.keypairs.create(name=worker_key_id, public_key=pubkey)
