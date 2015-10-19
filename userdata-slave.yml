@@ -9,11 +9,8 @@ packages:
 
 runcmd:
     - pip install celery
-    - apt-get remove python-librabbitmq
     - git clone -b elias https://github.com/ka2le/accpro.git /home/ubuntu/accpro
     - export master_ip=
     - export C_FORCE_ROOT="true"
-    - export LC_ALL=C
     - cd /home/ubuntu/accpro
-    - chown -R ubuntu ~/accpro
     - celery worker -l info -A tasks
