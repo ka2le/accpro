@@ -11,7 +11,7 @@ def airfoil(angle):
 	subprocess.check_call("./run.sh " + angle + " " + angle +" 1 200 1", shell=True)
 
 	print "Converting the generated mesh files to xml"
-	subprocess.check_call("./convert.sh, shell=True)")
+	subprocess.check_call("./convert.sh", shell=True))
 
 	print "Run airfiol on every xml file"
 	xml_files = glob.glob('msh/*.xml')
