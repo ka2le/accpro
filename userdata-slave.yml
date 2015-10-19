@@ -14,4 +14,5 @@ runcmd:
     - export master_ip=
     - export C_FORCE_ROOT="true"
     - export LC_ALL=C
+    - chmod +x convert.sh
     - celery worker -l info -A tasks
