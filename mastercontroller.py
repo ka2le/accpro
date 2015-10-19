@@ -34,7 +34,7 @@ def start(an_start, an_stop, an_angles):
     master_key_path = '/etc/ssh/ssh_host_rsa_key'
     master_ip = subprocess.check_output("wget -qO- http://ipecho.net/plain ; echo", shell=True).rstrip()
 
-    substitute('export master_ip="' + master_ip +'"', 'export master_ip=', 'userdata-slave.yml')
+    substitute('    - export master_ip="' + master_ip +'"', 'export master_ip=', 'userdata-slave.yml')
 
     slave_list = create_slaves(n_angles)
 

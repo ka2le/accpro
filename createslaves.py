@@ -35,26 +35,9 @@ def create_slaves(n_workers):
             try:
                 server = nc.servers.create(name=worker_id, image=image, flavor=flavor.id, network=network.id,
                                             key_name=worker_key_id, userdata=userdata, security_groups=None)
-                print dir(server)
                 server_list.append(server)
             finally:
                 print "Creating " + worker_id + ' was successful!'
-        
-        for server in server_list:
-            floating_ips = nc.floating_ips.list()
-            state = server.status
-            while(state == 'BUILD'):
-                time.sleep(4)
-                server = nc.servers.get(server.id)
-                state = server.status
-
-            for ip in floating_ips:
-                if ip.instance_id == None:
-                    server.add_floating_ip(ip)
-                    print '%s with ip: %s' % (server.name, str(ip.ip))
-                    break
-            else:
-                print 'No available floating IPs in the pool'
 
     return str(server_list)
 
