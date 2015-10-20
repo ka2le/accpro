@@ -7,10 +7,10 @@ from dolfin_convert import gmsh2xml
 app = Celery('tasks', backend='amqp', broker='amqp://elias:pass@' + os.environ['master_ip'] + ':5672/geijer')
 
 @app.task
-def airfoil(angle):
+def airfoil(angle, levels):
 
 	print "Generate mesh files for angle " + angle
-	check_call("./run.sh " + angle + " " + angle +" 1 200 1", shell=True)
+	check_call("./run.sh " + angle + " " + angle +" 1 200 " + levels , shell=True)
 
 	print "Converting the generated mesh files to xml"
 	msh_files = glob.glob('msh/*.msh')
