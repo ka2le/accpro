@@ -1,5 +1,8 @@
 #!todo-api/flask/bin/python
 from flask import Flask, request
+import sys
+sys.path.append("~/accpro")
+from mastercontroller import start
 
 app = Flask(__name__)
 
@@ -17,7 +20,7 @@ def webUIBackend():
 	nodes = valuesArray[3]
 	levels = valuesArray[4]
 	#do all the stuff with the input values
-
+	start(startAngle, endAngle, nrAngle)
 	return "nodes "+str(nodes)+" startAngle "+startAngle #return something else here later
 
 if __name__ == '__main__':
