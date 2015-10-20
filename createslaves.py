@@ -1,5 +1,4 @@
-import os
-import time
+import os, sys, subprocess
 from novaclient.client import Client
 
 def create_slaves(n_workers):
@@ -14,6 +13,9 @@ def create_slaves(n_workers):
 
     master_key_pub_path = '/etc/ssh/ssh_host_rsa_key.pub'
     master_key_path = '/etc/ssh/ssh_host_rsa_key'
+
+    master_ip = subprocess.check_output("wget -qO- http://ipecho.net/plain ; echo", shell=True).rstrip()
+    substitute('    - export master_ip="' + master_ip +'"', 'export master_ip=', 'userdata-slave.yml')
 
     # Clear all the old worker keypairs
     for k in nc.keypairs.findall():
