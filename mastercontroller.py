@@ -9,19 +9,6 @@ def calc_n_workers(n_angles, max_task_per_worker):
 		n += 1
 	return n
 
-def substitute(new, old, file):
-    f = open(file, "r")
-    lines = f.readlines()
-    f.close()
-
-    f = open(file, "w")
-    for line in lines:
-            if not old in line:
-                    f.write(line)
-            else:
-                    f.write(new + '\n')
-    f.close()
-
 def start(angle_start, angle_stop, n_angles):
     angle_diff = (angle_stop-angle_start)/n_angles
     #n_workers = calc_n_workers(n_angles, 2)

@@ -1,6 +1,19 @@
 import os, sys, subprocess
 from novaclient.client import Client
 
+def substitute(new, old, file):
+    f = open(file, "r")
+    lines = f.readlines()
+    f.close()
+
+    f = open(file, "w")
+    for line in lines:
+            if not old in line:
+                    f.write(line)
+            else:
+                    f.write(new + '\n')
+    f.close()
+
 def create_slaves(n_workers):
     config = {'username':os.environ['OS_USERNAME'],
         'api_key':os.environ['OS_PASSWORD'],
