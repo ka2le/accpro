@@ -26,3 +26,5 @@ def airfoil(angle, levels):
 		except CalledProcessError as e:
 			print e.returncode
 
+	return "OK"
+
