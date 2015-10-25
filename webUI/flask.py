@@ -23,5 +23,10 @@ def webUIBackend():
 	start(startAngle, endAngle, nrAngle)
 	return "nodes "+str(nodes)+" startAngle "+startAngle #return something else here later
 
+@app.route('/p/<int:a_from>,<int:a_to>,<int:a_n>')
+def testing(a_from, a_to, a_n):
+	start(a_from, a_to, a_n)
+
+
 if __name__ == '__main__':
 	app.run(debug=True)

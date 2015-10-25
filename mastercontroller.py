@@ -11,10 +11,13 @@ def calc_n_workers(n_angles, max_task_per_worker):
 
 def start(angle_start, angle_stop, n_angles):
     angle_diff = (angle_stop-angle_start)/n_angles
-    #n_workers = calc_n_workers(n_angles, 2)
-    slave_list = create_slaves(n_angles)
+    n_workers = calc_n_workers(n_angles, 1)
+    slave_list = create_slaves(n_workers)
 
-    #job = group([airfoil.s(n*angle_diff) for n in range(1, n_angles+1)])
-    #result = job.apply_async()
+    job = group([airfoil.s(n*angle_diff) for n in range(1, n_angles+1)])
+    result = job.apply_async()
 
-    return slave_list
+    while result.ready() == False:
+        k = 1
+
+    return result.get()

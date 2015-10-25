@@ -25,6 +25,5 @@ def airfoil(angle, levels):
 			check_call("sudo ./navier_stokes_solver/airfoil 10 0.0001 10. 1 ./" + xml, shell=True)
 		except CalledProcessError as e:
 			print e.returncode
-
-	return "OK"
-
+	result = open("results/drag_ligt.m", 'r').read()
+	return result
