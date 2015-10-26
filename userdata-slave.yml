@@ -12,4 +12,4 @@ runcmd:
     - export master_ip=
     - export C_FORCE_ROOT="true"
     - cd /home/ubuntu/accpro
-    - celery worker -l info -A tasks
+    - celery worker -l info -A tasks --concurrency=1

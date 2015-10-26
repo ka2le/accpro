@@ -4,6 +4,8 @@ from celery import Celery
 from dolfin_convert import gmsh2xml
 
 app = Celery('tasks', backend='amqp', broker='amqp://elias:pass@' + os.environ['master_ip'] + ':5672/geijer')
+app.conf.CELERY_ACKS_LATE = True
+app.conf.CELERYD_PREFETCH_MULTIPLIER = 1
 
 @app.task
 def airfoil(angle, levels):

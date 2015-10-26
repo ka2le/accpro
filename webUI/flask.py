@@ -61,10 +61,10 @@ def testing(angle_start, angle_stop, a_n, max_task_per_worker):
 			pl2.set_title("Drag force")
 			fig.savefig(name + '.png')
 
-	png_files = glob.glob('*.png')
-	for png_f in png_files:
-		with open(png_f, 'rb') as f:
-			encoded_png = base64.b64encode(f.read())
+	#png_files = glob.glob('*.png')
+	#for png_f in png_files:
+	#	with open(png_f, 'rb') as f:
+	#		encoded_png = base64.b64encode(f.read())
 		# send to frontend
 
 	return str(result.get())
