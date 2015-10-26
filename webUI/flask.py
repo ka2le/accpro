@@ -6,7 +6,7 @@ from mastercontroller import start
 
 app = Flask(__name__)
 
-@app.route('/hello/test')
+@app.route('/', methods=['GET'])
 def index():
 	return 'hello mannen'
 
@@ -23,10 +23,10 @@ def webUIBackend():
 	start(startAngle, endAngle, nrAngle)
 	return "nodes "+str(nodes)+" startAngle "+startAngle #return something else here later
 
-@app.route('/p/<int:a_from>,<int:a_to>,<int:a_n>')
+@app.route('/p/<int:a_from>,<int:a_to>,<int:a_n>', methods=['GET'])
 def testing(a_from, a_to, a_n):
 	start(a_from, a_to, a_n)
 
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(host='0.0.0.0', debug=True)

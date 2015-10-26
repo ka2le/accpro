@@ -14,7 +14,7 @@ def start(angle_start, angle_stop, n_angles):
     n_workers = calc_n_workers(n_angles, 1)
     slave_list = create_slaves(n_workers)
 
-    job = group([airfoil.s(n*angle_diff) for n in range(1, n_angles+1)])
+    job = group([airfoil.s(n*angle_diff,0) for n in range(1, n_angles+1)])
     result = job.apply_async()
 
     while result.ready() == False:
