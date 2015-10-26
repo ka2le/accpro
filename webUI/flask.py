@@ -16,10 +16,6 @@ def calc_n_workers(n_angles, max_task_per_worker):
 		n += 1
 	return n
 
-@app.route('/', methods=['GET'])
-def index():
-	return 'hello mannen'
-
 @app.route('/webUIBackend', methods=['GET'])
 def webUIBackend():
 	values = request.args.get('values')
@@ -37,32 +33,31 @@ def webUIBackend():
 def testing(angle_start, angle_stop, a_n):
 
 	angle_diff = (angle_stop-angle_start)/a_n
-    n_workers = calc_n_workers(a_n, 1)
-    slave_list = create_slaves(n_workers)
+	n_workers = calc_n_workers(a_n, 1)
+	slave_list = create_slaves(n_workers)
 
 	job = group([airfoil.s(n*angle_diff,0) for n in range(1, a_n+1)])
-    result = job.apply_async()
+	result = job.apply_async()
 
-    while result.ready() == False:
-        k = 1
+	while result.ready() == False:
+		k = 1
 
-    for r in result.get():
-    	for angle in r:
-    		name = angle['name']
-    		data = angle['data'][2:].split()[3:]
-    		time = np.array(data[::3], dtype=np.float)
-    		lift = np.array(data[1::3], dtype=np.float)
-    		drag = np.array(data[2::3], dtype=np.float)
-    		fig = plt.figure()
-    		pl1 = fig.add_subplot(121)
-    		pl1.set_title("Lift force")
-    		pl1.plot(time, lift)
-    		pl2 = fig.add_subplot(122)
-    		pl2.plot(time, drag)
-    		pl2.set_title("Drag force")
-    		fig.savefig(name + '.png')
-
-    return str(result.get())
+	for r in result.get():
+		for angle in r:
+			name = angle['name']
+			data = angle['data'][2:].split()[3:]
+			time = np.array(data[::3], dtype=np.float)
+			lift = np.array(data[1::3], dtype=np.float)
+			drag = np.array(data[2::3], dtype=np.float)
+			fig = plt.figure()
+			pl1 = fig.add_subplot(211)
+			pl1.set_title("Lift force")
+			pl1.plot(time, lift)
+			pl2 = fig.add_subplot(212)
+			pl2.plot(time, drag)
+			pl2.set_title("Drag force")
+			fig.savefig(name + '.png')
+	return str(result.get())
 
 
 if __name__ == '__main__':
