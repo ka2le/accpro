@@ -3,21 +3,11 @@ from celery import group
 from tasks import airfoil
 from createslaves import create_slaves
 
-def calc_n_workers(n_angles, max_task_per_worker):
-	n = n_angles / max_task_per_worker
-	if (n_angles % max_task_per_worker) != 0:
-		n += 1
-	return n
+
 
 def start(angle_start, angle_stop, n_angles):
     angle_diff = (angle_stop-angle_start)/n_angles
     n_workers = calc_n_workers(n_angles, 1)
     slave_list = create_slaves(n_workers)
 
-    job = group([airfoil.s(n*angle_diff,0) for n in range(1, n_angles+1)])
-    result = job.apply_async()
-
-    while result.ready() == False:
-        k = 1
-
-    return result.get()
+    
