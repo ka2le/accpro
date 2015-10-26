@@ -10,7 +10,7 @@ app = Celery('tasks', backend='amqp', broker='amqp://elias:pass@' + os.environ['
 def airfoil(angle, levels):
 
 	print "Generate mesh files for angle " + angle
-	check_call("./run.sh " + angle + " " + angle +" 1 200 " + levels , shell=True)
+	check_call("./run.sh " + str(angle) + " " + str(angle) +" 1 200 " + str(levels) , shell=True)
 
 	print "Converting the generated mesh files to xml"
 	msh_files = glob.glob('msh/*.msh')
@@ -28,5 +28,5 @@ def airfoil(angle, levels):
 
 	with open("results/drag_ligt.m", 'r') as f:
 		result = f.read()
-		
+
 	return result
