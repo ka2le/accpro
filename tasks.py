@@ -9,7 +9,7 @@ app = Celery('tasks', backend='amqp', broker='amqp://elias:pass@' + os.environ['
 @app.task
 def airfoil(angle, levels):
 
-	print "Generate mesh files for angle " + angle
+	print "Generate mesh files for angle " + str(angle)
 	check_call("./run.sh " + str(angle) + " " + str(angle) +" 1 200 " + str(levels) , shell=True)
 
 	print "Converting the generated mesh files to xml"
