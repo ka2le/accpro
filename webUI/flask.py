@@ -5,8 +5,11 @@ import sys, celery, subprocess
 from createslaves import create_slaves
 from celery import group
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
 from tasks import airfoil
+import base64, glob
 
 app = Flask(__name__)
 
@@ -29,11 +32,11 @@ def webUIBackend():
 	#start(startAngle, endAngle, nrAngle)
 	return "nodes "+str(nodes)+" startAngle "+startAngle #return something else here later
 
-@app.route('/p/<int:angle_start>,<int:angle_stop>,<int:a_n>', methods=['GET'])
-def testing(angle_start, angle_stop, a_n):
+@app.route('/p/<int:angle_start>,<int:angle_stop>,<int:a_n>,<int:max_task_per_worker', methods=['GET'])
+def testing(angle_start, angle_stop, a_n, max_task_per_worker):
 
 	angle_diff = (angle_stop-angle_start)/a_n
-	n_workers = calc_n_workers(a_n, 1)
+	n_workers = calc_n_workers(a_n, max_task_per_worker)
 	slave_list = create_slaves(n_workers)
 
 	job = group([airfoil.s(n*angle_diff,0) for n in range(1, a_n+1)])
@@ -57,8 +60,14 @@ def testing(angle_start, angle_stop, a_n):
 			pl2.plot(time, drag)
 			pl2.set_title("Drag force")
 			fig.savefig(name + '.png')
-	return str(result.get())
 
+	png_files = glob.glob('*.png')
+	for png_f in png_files:
+		with open(png_f, 'rb') as f:
+			encoded_png = base64.b64encode(f.read())
+		# send to frontend
+
+	return str(result.get())
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', debug=True)
