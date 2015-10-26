@@ -5,7 +5,7 @@ package_upgrade: true
 packages:
     - git
     - python-pip
-    - python-swiftclient
+	- python-numpy
 
 runcmd:
     - pip install celery
