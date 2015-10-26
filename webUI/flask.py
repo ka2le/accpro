@@ -6,7 +6,7 @@ from createslaves import create_slaves
 from celery import group
 import numpy as np
 import matplotlib.pyplot as plt
-
+from tasks import airfoil
 
 app = Flask(__name__)
 
@@ -54,12 +54,12 @@ def testing(angle_start, angle_stop, a_n):
     		lift = np.array(data[1::3], dtype=np.float)
     		drag = np.array(data[2::3], dtype=np.float)
     		fig = plt.figure()
-    		fig.add_subplot(121)
-    		fig.set_title("Lift force")
-    		fig.plot(time, lift)
-    		fig.add_subplot(122)
-    		fig.plot(time, drag)
-    		fig.set_title("Drag force")
+    		pl1 = fig.add_subplot(121)
+    		pl1.set_title("Lift force")
+    		pl1.plot(time, lift)
+    		pl2 = fig.add_subplot(122)
+    		pl2.plot(time, drag)
+    		pl2.set_title("Drag force")
     		fig.savefig(name + '.png')
 
     return str(result.get())
