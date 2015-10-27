@@ -24,16 +24,17 @@ def create_slaves(n_workers):
 
     server_list = []
 
-    master_key_pub_path = '/etc/ssh/ssh_host_rsa_key.pub'
-    master_key_path = '/etc/ssh/ssh_host_rsa_key'
+    #master_key_pub_path = '/etc/ssh/ssh_host_rsa_key.pub'
+    #master_key_path = '/etc/ssh/ssh_host_rsa_key'
 
+    keypair = nc.keypairs.find(name='lundekey')
     master_ip = subprocess.check_output("wget -qO- http://ipecho.net/plain ; echo", shell=True).rstrip()
     substitute('    - export master_ip="' + master_ip +'"', 'export master_ip=', 'userdata-slave.yml')
 
     # Clear all the old worker keypairs
-    for k in nc.keypairs.findall():
-        if (k.id != 'lundekey'):
-            nc.keypairs.delete(k)
+    #for k in nc.keypairs.findall():
+    #    if (k.id != 'lundekey'):
+    #        nc.keypairs.delete(k)
 
     image = nc.images.find(id='59a19f79-f906-44e0-964a-22d66558cc54')
     flavor = nc.flavors.find(name='m1.medium')
@@ -47,11 +48,11 @@ def create_slaves(n_workers):
         for n in range(0, n_workers):
             worker_id = 'lundestance-slave' + str(n)
             worker_key_id = 'lundekey' + str(n)
-            if not nc.keypairs.findall(name=worker_id):
-                nc.keypairs.create(name=worker_key_id, public_key=pubkey)
+            #if not nc.keypairs.findall(name=worker_id):
+            #    nc.keypairs.create(name=worker_key_id, public_key=pubkey)
             try:
                 server = nc.servers.create(name=worker_id, image=image, flavor=flavor.id, network=network.id,
-                                            key_name=worker_key_id, userdata=userdata, security_groups=None)
+                                            key_name=keypair, userdata=userdata, security_groups=None)
                 server_list.append(server)
             finally:
                 print "Creating " + worker_id + ' was successful!'

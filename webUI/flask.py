@@ -32,7 +32,7 @@ def webUIBackend():
 	#start(startAngle, endAngle, nrAngle)
 	return "nodes "+str(nodes)+" startAngle "+startAngle #return something else here later
 
-@app.route('/p/<int:angle_start>,<int:angle_stop>,<int:a_n>,<int:max_task_per_worker', methods=['GET'])
+@app.route('/p/<int:angle_start>,<int:angle_stop>,<int:a_n>,<int:max_task_per_worker>', methods=['GET'])
 def testing(angle_start, angle_stop, a_n, max_task_per_worker):
 
 	angle_diff = (angle_stop-angle_start)/a_n
