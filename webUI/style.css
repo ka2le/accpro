@@ -1,3 +1,7 @@
+canvas{
+ height: 200px;
+ witdh:300px;
+}
 body{
 background-color:rgb(233,234,237) ;
 font-family:Arial, Helvetica, sans-serif;
