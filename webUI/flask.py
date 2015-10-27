@@ -7,6 +7,13 @@ app = Flask(__name__)
 def index():
 	return 'hello mannen'
 
+@app.route('/status', methods=['GET'])
+def webUIBackend():
+	#staus is a string with info on the progress
+	#when all is done status should return "Complete"
+	#to return image status returns an base64 string and this is done with img_base64String to tell the frontend that it is an image
+	return status
+
 @app.route('/webUIBackend', methods=['GET'])
 def webUIBackend():
 	values = request.args.get('values')
