@@ -1,15 +1,14 @@
 #!todo-api/flask/bin/python
 from flask import Flask, request
-import sys, celery, subprocess
+import sys, celery, subprocess, base64, glob, matplotlib
 #sys.path.append("~/accpro")
 from createslaves import create_slaves
 from celery import group
+from tasks import airfoil
 import numpy as np
-import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
-from tasks import airfoil
-import base64, glob
+
 
 app = Flask(__name__)
 
@@ -35,8 +34,19 @@ def webUIBackend():
 @app.route('/p/<int:angle_start>,<int:angle_stop>,<int:a_n>,<int:max_task_per_worker>', methods=['GET'])
 def testing(angle_start, angle_stop, a_n, max_task_per_worker):
 
+    config = {'username':os.environ['OS_USERNAME'],
+        'api_key':os.environ['OS_PASSWORD'],
+        'project_id':os.environ['OS_TENANT_NAME'],
+        'auth_url':os.environ['OS_AUTH_URL']}
+
+    nc = Client('2',**config)
+
+    
+
+
 	angle_diff = (angle_stop-angle_start)/a_n
 	n_workers = calc_n_workers(a_n, max_task_per_worker)
+	print 'Creating %d workers' % n_workers
 	slave_list = create_slaves(n_workers)
 
 	job = group([airfoil.s(n*angle_diff,0) for n in range(1, a_n+1)])
@@ -44,7 +54,7 @@ def testing(angle_start, angle_stop, a_n, max_task_per_worker):
 
 	while result.ready() == False:
 		k = 1
-
+	print 'Task done, now create plots'
 	for r in result.get():
 		for angle in r:
 			name = angle['name']
