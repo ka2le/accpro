@@ -10,16 +10,14 @@ config = {'username':os.environ['OS_USERNAME'],
  
 nova = Client('2',**config)
 
-instances = nova.servers.findall()
+instances = nova.servers.list(search_opts={'name': 'lundestance-slave'})
 myid = "1205eee10f7c4aeebf180b3beb2ec60c"
 
 subprocess.check_call("sudo rabbitmqctl stop_app", shell=True)
 subprocess.check_call("sudo rabbitmqctl force_reset", shell=True)
 
 for a in instances: 
-    if a.user_id == myid:
-    	if a.name != "lundestance-master":
-        	a.delete()    
+	a.delete()    
 
 subprocess.check_call("sudo rabbitmqctl start_app", shell=True)
 subprocess.check_call("sudo rabbitmqctl add_user elias pass", shell=True)

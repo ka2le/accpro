@@ -22,7 +22,8 @@ def create_slaves(n_workers):
 
     nc = Client('2',**config)
 
-    server_list = []
+    server_list = sorted(nc.servers.list(search_opts={'name': 'lundestance-slave'}), key=lambda w: w.name)
+    n_workers_running = len(server_list)
 
     image = nc.images.find(id='59a19f79-f906-44e0-964a-22d66558cc54')
     flavor = nc.flavors.find(name='m1.medium')
@@ -35,9 +36,8 @@ def create_slaves(n_workers):
     with open('userdata-slave.yml', 'r') as ud:
         userdata = ud.read()
 
-    for n in range(0, n_workers):
+    for n in range(n_workers_running, n_workers_running + n_workers):
         worker_id = 'lundestance-slave' + str(n)
-        worker_key_id = 'lundekey' + str(n)
         try:
             server = nc.servers.create(name=worker_id, image=image, flavor=flavor.id, network=network.id,
                                         key_name=keypair.name, userdata=userdata, security_groups=None)
@@ -45,6 +45,6 @@ def create_slaves(n_workers):
         finally:
             print "Creating " + worker_id + ' was successful!'
 
-    return str(server_list)
+    return server_list
 
 
