@@ -2,7 +2,6 @@
 from flask import Flask, request
 import os, sys, celery, subprocess, base64, glob, matplotlib
 from subprocess import check_call
-sys.path.append("~/accpro")
 from createslaves import create_slaves
 from celery import group
 from tasks import airfoil
@@ -34,14 +33,11 @@ def status():
 @app.route('/webUIBackend', methods=['GET'])
 def backend():
 
-	values = request.args.get('values')
-	valuesArray = values.split("_");
-	startAngle = int(valuesArray[0])
-	endAngle = int(valuesArray[1])
-	nrAngle = int(valuesArray[2])
-	#nodes = int(valuesArray[3])
-	max_task_per_worker = int(valuesArray[3])
-	levels = int(valuesArray[4])
+	startAngle = int(request.args.get('startAngle'))
+	endAngle = int(request.args.get('endAngle'))
+	nrAngle = int(request.args.get('nrAngle'))
+	max_task_per_worker = int(request.args.get('nodes'))
+	levels = int(request.args.get('levels'))
 
 	config = {'username':os.environ['OS_USERNAME'],
         'api_key':os.environ['OS_PASSWORD'],
@@ -52,8 +48,8 @@ def backend():
 
 	workers = sorted(nc.servers.list(search_opts={'name': 'lundestance-slave'}), key=lambda w: w.name)
 	n_workers_running = len(workers)
-	n_workers = calc_n_workers(levels, max_task_per_worker)
-	print '%d workers running, %d workers are needed for the task start=%d, stop=%d, n=%d, max_task_per_worker=%d' % (n_workers_running, n_workers, startAngle, endAngle, levels, max_task_per_worker)
+	n_workers = calc_n_workers(nrAngle, max_task_per_worker)
+	print '%d workers running, %d workers are needed for the task start=%d, stop=%d, n=%d, max_task_per_worker=%d' % (n_workers_running, n_workers, startAngle, endAngle, nrAngle, max_task_per_worker)
 
 	# Scale up
 	if n_workers_running < n_workers:
@@ -76,10 +72,10 @@ def backend():
 		check_call("sudo rabbitmqctl add_vhost geijer", shell=True)
 		check_call('sudo rabbitmqctl set_permissions -p geijer elias ".*" ".*" ".*"', shell=True)
 
-	angle_diff = (endAngle-startAngle)/levels
-	angles = [startAngle + n*angle_diff for n in range(1, levels+1)]
+	angle_diff = (endAngle-startAngle)/nrAngle
+	angles = [startAngle + n*angle_diff for n in range(1, nrAngle+1)]
 	print 'Sending task for angles: %s' % str(angles)
-	job = group([airfoil.s(a,0) for a in angles])
+	job = group([airfoil.s(a,levels) for a in angles])
 	result = job.apply_async()
 
 	while result.ready() == False:
