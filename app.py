@@ -2,7 +2,7 @@
 from flask import Flask, request
 import os, sys, celery, subprocess, base64, glob, matplotlib
 from subprocess import check_call
-#sys.path.append("~/accpro")
+sys.path.append("~/accpro")
 from createslaves import create_slaves
 from celery import group
 from tasks import airfoil
