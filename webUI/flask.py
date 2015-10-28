@@ -1,6 +1,7 @@
 #!todo-api/flask/bin/python
 from flask import Flask, request
 import os, sys, celery, subprocess, base64, glob, matplotlib
+from subprocess import check_call
 #sys.path.append("~/accpro")
 from createslaves import create_slaves
 from celery import group
@@ -19,21 +20,28 @@ def calc_n_workers(n_angles, max_task_per_worker):
 		n += 1
 	return n
 
+@app.route('/status', methods=['GET'])
+def status():
+	png_files = glob.glob('plots/*.png')
+	for png_f in png_files:
+		with open(png_f, 'rb') as f:
+			encoded_png = base64.b64encode(f.read())
+		check_call("sudo mv " + png_f + " plots/finished/" + png_f[6:], shell=True)
+		break
+	image = 'img_' + encoded_png
+	return image
+
 @app.route('/webUIBackend', methods=['GET'])
-def webUIBackend():
+def backend():
+
 	values = request.args.get('values')
 	valuesArray = values.split("_");
-	startAngle = valuesArray[0]
-	endAngle = valuesArray[1]
-	nrAngle = valuesArray[2]
-	nodes = valuesArray[3]
-	levels = valuesArray[4]
-	#do all the stuff with the input values
-	#start(startAngle, endAngle, nrAngle)
-	return "nodes "+str(nodes)+" startAngle "+startAngle #return something else here later
-
-@app.route('/p/<int:angle_start>,<int:angle_stop>,<int:a_n>,<int:max_task_per_worker>', methods=['GET'])
-def testing(angle_start, angle_stop, a_n, max_task_per_worker):
+	startAngle = int(valuesArray[0])
+	endAngle = int(valuesArray[1])
+	nrAngle = int(valuesArray[2])
+	#nodes = int(valuesArray[3])
+	max_task_per_worker = int(valuesArray[3])
+	levels = int(valuesArray[4])
 
 	config = {'username':os.environ['OS_USERNAME'],
         'api_key':os.environ['OS_PASSWORD'],
@@ -44,8 +52,8 @@ def testing(angle_start, angle_stop, a_n, max_task_per_worker):
 
 	workers = sorted(nc.servers.list(search_opts={'name': 'lundestance-slave'}), key=lambda w: w.name)
 	n_workers_running = len(workers)
-	n_workers = calc_n_workers(a_n, max_task_per_worker)
-	print '%d workers running, %d workers are needed for the task start=%d, stop=%d, n=%d, max_task_per_worker=%d' % (n_workers_running, n_workers, angle_start, angle_stop, a_n, max_task_per_worker)
+	n_workers = calc_n_workers(levels, max_task_per_worker)
+	print '%d workers running, %d workers are needed for the task start=%d, stop=%d, n=%d, max_task_per_worker=%d' % (n_workers_running, n_workers, startAngle, endAngle, levels, max_task_per_worker)
 
 	# Scale up
 	if n_workers_running < n_workers:
@@ -55,21 +63,21 @@ def testing(angle_start, angle_stop, a_n, max_task_per_worker):
 	# Scale down
 	elif n_workers_running > n_workers:
 		print 'Killing %d workers' % len(workers[n_workers:])
-		subprocess.check_call("sudo rabbitmqctl stop_app", shell=True)
-		subprocess.check_call("sudo rabbitmqctl force_reset", shell=True)
+		check_call("sudo rabbitmqctl stop_app", shell=True)
+		check_call("sudo rabbitmqctl force_reset", shell=True)
 
 		workers_to_kill = workers[n_workers:]
 		workers = workers[:n_workers]
 		for w in workers_to_kill:
 			w.delete()
 
-		subprocess.check_call("sudo rabbitmqctl start_app", shell=True)
-		subprocess.check_call("sudo rabbitmqctl add_user elias pass", shell=True)
-		subprocess.check_call("sudo rabbitmqctl add_vhost geijer", shell=True)
-		subprocess.check_call('sudo rabbitmqctl set_permissions -p geijer elias ".*" ".*" ".*"', shell=True)
+		check_call("sudo rabbitmqctl start_app", shell=True)
+		check_call("sudo rabbitmqctl add_user elias pass", shell=True)
+		check_call("sudo rabbitmqctl add_vhost geijer", shell=True)
+		check_call('sudo rabbitmqctl set_permissions -p geijer elias ".*" ".*" ".*"', shell=True)
 
-	angle_diff = (angle_stop-angle_start)/a_n
-	angles = [angle_start + n*angle_diff for n in range(1, a_n+1)]
+	angle_diff = (endAngle-startAngle)/levels
+	angles = [startAngle + n*angle_diff for n in range(1, levels+1)]
 	print 'Sending task for angles: %s' % str(angles)
 	job = group([airfoil.s(a,0) for a in angles])
 	result = job.apply_async()
@@ -91,15 +99,9 @@ def testing(angle_start, angle_stop, a_n, max_task_per_worker):
 			pl2 = fig.add_subplot(212)
 			pl2.plot(time, drag)
 			pl2.set_title("Drag force")
-			fig.savefig(name + '.png')
+			fig.savefig('plots/' + name + '.png')
 
-	#png_files = glob.glob('*.png')
-	#for png_f in png_files:
-	#	with open(png_f, 'rb') as f:
-	#		encoded_png = base64.b64encode(f.read())
-		# send to frontend
-
-	return str(result.get())
+	return "OK"
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', debug=True)
