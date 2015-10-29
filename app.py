@@ -1,4 +1,3 @@
-#!todo-api/flask/bin/python
 from flask import Flask, request
 import os, sys, celery, subprocess, base64, glob, matplotlib
 from subprocess import check_call
@@ -23,11 +22,12 @@ def calc_n_workers(n_angles, max_task_per_worker):
 def status():
 	image = ''
 	png_files = glob.glob('plots/*.png')
-	for png_f in png_files:
-		with open(png_f, 'rb') as f:
-			image = 'img_' + base64.b64encode(f.read())
-		check_call("sudo mv " + png_f + " plots/finished/" + png_f[6:], shell=True)
-		break
+	if png_files:
+		for png_f in png_files:
+			with open(png_f, 'rb') as f:
+				image = image + '_' + base64.b64encode(f.read())
+			check_call("sudo mv " + png_f + " plots/finished/" + png_f[6:], shell=True)
+		image = 'data' + image
 	return image
 
 @app.route('/webUIBackend', methods=['GET'])
@@ -38,8 +38,9 @@ def backend():
 	startAngle = int(request.args.get('startAngle'))
 	endAngle = int(request.args.get('endAngle'))
 	nrAngle = int(request.args.get('nrAngle'))
-	max_task_per_worker = int(request.args.get('nodes'))
+	nodes = int(request.args.get('nodes'))
 	levels = int(request.args.get('levels'))
+	max_task_per_worker = int(request.args.get('maxAngles'))
 
 	config = {'username':os.environ['OS_USERNAME'],
         'api_key':os.environ['OS_PASSWORD'],
@@ -77,7 +78,7 @@ def backend():
 	angle_diff = (endAngle-startAngle)/nrAngle
 	angles = [startAngle + n*angle_diff for n in range(1, nrAngle+1)]
 	print 'Sending task for angles: %s' % str(angles)
-	job = group([airfoil.s(a,levels) for a in angles])
+	job = group([airfoil.s(a, nodes, levels) for a in angles])
 	result = job.apply_async()
 
 	while result.ready() == False:

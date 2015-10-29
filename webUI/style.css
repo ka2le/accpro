@@ -1,17 +1,21 @@
 canvas{
  height: 550px;
- witdh:650px;
+ width:650px;
 }
+
 body{
 background-color:rgb(233,234,237) ;
 font-family:Arial, Helvetica, sans-serif;
 }
+
 #container{
-height: 90%;
+height: 95%;
 width:800px;
 position:absolute;
 left:50%;
 margin-left:-400px;
+display: block;
+overflow: auto;
 background-color: white;
 border: 1px solid;
 	border-color: rgb(193,194,197);
@@ -19,12 +23,15 @@ border: 1px solid;
 	text-align:center;
 	padding-top:20px;
 }
+
 h2{
 font-size:18px;
 }
+
 h3{
 font-size:14px;
 }
+
 h4{
 font-size:14px;
 font-weight: normal;
@@ -32,7 +39,7 @@ font-style: italic;
 
 }
 .checkbox{
-	 -ms-transform: scale(2); /* IE */
+  -ms-transform: scale(2); /* IE */
   -moz-transform: scale(2); /* FF */
   -webkit-transform: scale(2); /* Safari and Chrome */
   -o-transform: scale(2); /* Opera */
@@ -44,43 +51,54 @@ font-style: italic;
 #checkbox2{
 top:110px;
 }
+
 .textbox{
 float:right;
-
 margin-right:100px;
 }
+
 label{
-	margin-left:100px;
+margin-left:100px;
 }
+
 .step{
 padding-top:5px;
 position:relative;
 width:600px;
 left:100px;
 }
+
+.graphs{
+padding-top:5px;
+position:relative;
+width:600px;
+}
+
 .finished{
 background-color:rgb(178, 255, 178);
-
 }
+
 .working{
 background-color:rgb(255, 255, 153);
-
 }
+
 .unfinished{
 background-color:rgb(255, 214, 214);
-
 }
+
 .separator{
 	height:4px;
 	width:600px;
 	background-color:rgb(233,234,237);
 	margin-left:100px;
 }
+
 .content{
 	position: relative;
 	margin-left:300px;
 	margin-top: 40px;
 }
+
 .myButton{
 	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;

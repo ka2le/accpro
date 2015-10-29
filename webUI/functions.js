@@ -1,9 +1,9 @@
-function onloading(){}
 
-function handleResult(data){
-	var text = data.value; //inte exakt såhär men
-	print(text);
-}
+var masterIP;
+var statusCheckTime = 10000;
+var counter = 0;
+
+function onloading(){}
 
 function print(text, type){
 	var newHtml = document.getElementById("step3").innerHTML;
@@ -18,68 +18,38 @@ function print(text, type){
 	
 	document.getElementById("step3").innerHTML = newHtml;
 }
-var masterIP;
-var progress = "Just Started";
-var finished;
-var statusCheckTime = 10000;
-var counter = 0;
 
 function connectToMaster(){
 	masterIP = document.getElementById("masterIP").value;
 	checkStatus();
-	//setTimeout(function(){ checkStatus(); }, statusCheckTime);
 }
 
 function checkStatus(){
-	counter++;
-	console.log("checkStatus");
-	if(!finished){
-		setTimeout(function(){ checkStatus(); }, statusCheckTime);
-	}
-
+	setTimeout(function(){ checkStatus(); }, statusCheckTime);
 	$.ajax({
 		type: "GET",
 		url: "http://" + masterIP + ":5000/status",
 		success: function(data) {
-			if(data=="Complete" || counter == 30){
-				finished = true;
-			}
-			console.log(data+"<data progress>"+progress);
-			if(progress == data){
-				console.log("Nothing Happened");
-			}else{
-				var dataArray= data.split("_");
-				progress = data;
-				if(dataArray[0] = "img"){ 
-					$("#step4").append('<br><canvas id="c'+counter+'" width="800" height="600"></canvas>');
-					var canvas = document.getElementById("c"+counter);
-					var ctx = canvas.getContext("2d");
-					var image = new Image();
-					var base64String = dataArray[1];
-					image.onload = function() {
-						ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
-					};
-					image.src = "data:image/  png;base64,"+base64String;
-				}else{
-					console.log(data);
-					print("Progress: "+data, "k");
-					progress = data;
+			var dataArray= data.split("_");
+			if(dataArray[0] == "data"){
+				for (i = 1; i < dataArray.length; i++) {
+					$("#step5").append('<img id="c'+counter+'" src="data:image/  png;base64,' + dataArray[i] +'">');
+					counter++;
 				}
 			}
-
 		}
 	});
 }
 
 function startSimulation(){
 	print("Analyzing...", "k");
-	finished = false;
 	document.getElementById("step2").className += " working";
 	var startAngle = document.getElementById("startAngle").value;
 	var endAngle = document.getElementById("endAngle").value;
 	var nrAngle = document.getElementById("nrAngle").value;
 	var nodes = document.getElementById("nodes").value;
 	var levels = document.getElementById("levels").value;
+	var maxAngles = document.getElementById("maxAngles").value;
 
 	$.ajax({
 	type: "GET",
@@ -89,11 +59,10 @@ function startSimulation(){
 		endAngle: endAngle,
 		nrAngle: nrAngle,
 		nodes: nodes,
-		levels: levels
+		levels: levels,
+		maxAngles: maxAngles
 	},
 	success: function(data) {
-		console.log(data);
-		//finished = true;
 		checkStatus();
 		}
 	});

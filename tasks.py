@@ -8,12 +8,12 @@ app.conf.CELERY_ACKS_LATE = True
 app.conf.CELERYD_PREFETCH_MULTIPLIER = 1
 
 @app.task
-def airfoil(angle, levels):
+def airfoil(angle, nodes, levels):
 
 	results = []
 
 	print "Generate mesh files for angle " + str(angle)
-	check_call("./run.sh " + str(angle) + " " + str(angle) +" 1 200 " + str(levels) , shell=True)
+	check_call("./run.sh " + str(angle) + " " + str(angle) +" 1 " + str(nodes) + " " + str(levels) , shell=True)
 
 	print "Converting the generated mesh files to xml"
 	msh_files = glob.glob('msh/*.msh')
