@@ -25,7 +25,7 @@ def status():
 	png_files = glob.glob('plots/*.png')
 	for png_f in png_files:
 		with open(png_f, 'rb') as f:
-			image = 'img' + base64.b64encode(f.read())
+			image = 'img_' + base64.b64encode(f.read())
 		check_call("sudo mv " + png_f + " plots/finished/" + png_f[6:], shell=True)
 		break
 	return image
