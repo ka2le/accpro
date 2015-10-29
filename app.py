@@ -91,7 +91,7 @@ def backend():
 			lift = np.array(data[1::3], dtype=np.float)
 			drag = np.array(data[2::3], dtype=np.float)
 			fig = plt.figure()
-			fig.title(name, fontsize=20)
+			fig.suptitle(name, fontsize=20)
 			pl1 = fig.add_subplot(211)
 			pl1.set_title("Lift force")
 			pl1.plot(time, lift)
