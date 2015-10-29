@@ -3,14 +3,17 @@ from subprocess import CalledProcessError, check_output, check_call
 from celery import Celery
 from dolfin_convert import gmsh2xml
 
-
 app = Celery('tasks', backend='amqp', broker='amqp://elias:pass@' + os.environ['master_ip'] + ':5672/geijer')
+app.conf.CELERY_ACKS_LATE = True
+app.conf.CELERYD_PREFETCH_MULTIPLIER = 1
 
 @app.task
-def airfoil(angle):
+def airfoil(angle, levels):
 
-	print "Generate mesh files for angle " + angle
-	check_call("./run.sh " + angle + " " + angle +" 1 200 1", shell=True)
+	results = []
+
+	print "Generate mesh files for angle " + str(angle)
+	check_call("./run.sh " + str(angle) + " " + str(angle) +" 1 200 " + str(levels) , shell=True)
 
 	print "Converting the generated mesh files to xml"
 	msh_files = glob.glob('msh/*.msh')
@@ -23,6 +26,11 @@ def airfoil(angle):
 	for xml in xml_files:
 		try:
 			check_call("sudo ./navier_stokes_solver/airfoil 10 0.0001 10. 1 ./" + xml, shell=True)
+			with open("results/drag_ligt.m", 'r') as f:
+				result = f.read()
+			results.append({'name':xml[4:-4], 'data':result})
+
 		except CalledProcessError as e:
 			print e.returncode
 
+	return results
