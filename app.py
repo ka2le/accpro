@@ -2,7 +2,7 @@
 from flask import Flask, request
 import os, sys, celery, subprocess, base64, glob, matplotlib
 from subprocess import check_call
-from createslaves import create_slaves
+from createworkers import create_workers
 from celery import group
 from tasks import airfoil
 import numpy as np
@@ -21,17 +21,19 @@ def calc_n_workers(n_angles, max_task_per_worker):
 
 @app.route('/status', methods=['GET'])
 def status():
+	image = ''
 	png_files = glob.glob('plots/*.png')
 	for png_f in png_files:
 		with open(png_f, 'rb') as f:
-			encoded_png = base64.b64encode(f.read())
+			image = 'img' + base64.b64encode(f.read())
 		check_call("sudo mv " + png_f + " plots/finished/" + png_f[6:], shell=True)
 		break
-	image = 'img_' + encoded_png
 	return image
 
 @app.route('/webUIBackend', methods=['GET'])
 def backend():
+
+	worker_prefix = 'lundestance-worker'
 
 	startAngle = int(request.args.get('startAngle'))
 	endAngle = int(request.args.get('endAngle'))
@@ -46,7 +48,7 @@ def backend():
 
 	nc = Client('2',**config)
 
-	workers = sorted(nc.servers.list(search_opts={'name': 'lundestance-slave'}), key=lambda w: w.name)
+	workers = sorted(nc.servers.list(search_opts={'name': worker_prefix}), key=lambda w: w.name)
 	n_workers_running = len(workers)
 	n_workers = calc_n_workers(nrAngle, max_task_per_worker)
 	print '%d workers running, %d workers are needed for the task start=%d, stop=%d, n=%d, max_task_per_worker=%d' % (n_workers_running, n_workers, startAngle, endAngle, nrAngle, max_task_per_worker)
@@ -54,7 +56,7 @@ def backend():
 	# Scale up
 	if n_workers_running < n_workers:
 		print 'Adding %d workers' % (n_workers-n_workers_running)
-		workers = create_slaves(n_workers-n_workers_running)
+		workers = create_workers(n_workers-n_workers_running)
 
 	# Scale down
 	elif n_workers_running > n_workers:
@@ -89,6 +91,7 @@ def backend():
 			lift = np.array(data[1::3], dtype=np.float)
 			drag = np.array(data[2::3], dtype=np.float)
 			fig = plt.figure()
+			fig.title(name, fontsize=20)
 			pl1 = fig.add_subplot(211)
 			pl1.set_title("Lift force")
 			pl1.plot(time, lift)
