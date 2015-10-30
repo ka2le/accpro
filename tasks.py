@@ -25,7 +25,7 @@ def airfoil(angle, nodes, levels):
 	xml_files = glob.glob('msh/*.xml')
 	for xml in xml_files:
 		try:
-			check_call("sudo ./navier_stokes_solver/airfoil 10 0.0001 10. 1 ./" + xml, shell=True)
+			check_call("sudo ./navier_stokes_solver/airfoil 10 0.0001 10. 0.2 ./" + xml, shell=True)
 			with open("results/drag_ligt.m", 'r') as f:
 				result = f.read()
 			results.append({'name':xml[4:-4], 'data':result})

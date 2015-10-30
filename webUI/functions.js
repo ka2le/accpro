@@ -30,24 +30,18 @@ function checkStatus(){
 		type: "GET",
 		url: "http://" + masterIP + ":5000/status",
 		success: function(data) {
-			var dataArray= data.split("_");
-			if(dataArray[0] == "data"){
-				for (i = 1; i < dataArray.length; i++) {
-					$("#step5").append('<img id="c'+counter+'" src="data:image/  png;base64,' + dataArray[i] +'">');
-					counter++;
+			if(data != ""){
+				var dataArray= data.split("_");
+				if(dataArray[0] == "data"){
+					for (i = 1; i < dataArray.length; i++){
+						$("#step5").append('<img id="c'+counter+'" src="data:image/  png;base64,' + dataArray[i] +'">');
+						counter++;
+					}
 				}
+				delete dataArray;
+			}else{
+				console.log("No data")
 			}
-		}
-	});
-}
-
-function test(){
-	$.ajax({
-		type: "GET",
-		url: "http://" + masterIP + ":5000/",
-		success: function(data) {
-			console.log(data)
-				$("#testdiv").innerHTML(data);
 		}
 	});
 }
