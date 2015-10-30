@@ -20,6 +20,7 @@ def calc_n_workers(n_angles, max_task_per_worker):
 
 @app.route('/', methods=['GET'])
 def test():
+	print "TEST"
 	return "Yo"
 
 
@@ -37,6 +38,7 @@ def status():
 
 @app.route('/webUIBackend', methods=['GET'])
 def backend():
+	print str(request.args)
 
 	worker_prefix = 'lundestance-worker'
 

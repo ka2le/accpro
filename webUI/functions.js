@@ -41,6 +41,17 @@ function checkStatus(){
 	});
 }
 
+function test(){
+	$.ajax({
+		type: "GET",
+		url: "http://" + masterIP + ":5000/",
+		success: function(data) {
+			console.log(data)
+				$("#testdiv").innerHTML(data);
+		}
+	});
+}
+
 function startSimulation(){
 	print("Analyzing...", "k");
 	document.getElementById("step2").className += " working";
