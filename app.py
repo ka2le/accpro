@@ -1,14 +1,13 @@
-from flask import Flask, request
 import os, sys, celery, subprocess, base64, glob, matplotlib
-from subprocess import check_call
-from createworkers import create_workers
-from celery import group
-from tasks import airfoil
 import numpy as np
+from createworkers import create_workers
+from subprocess import check_call
+from flask import Flask, request
+from tasks import airfoil
+from celery import group
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from novaclient.client import Client
-
 
 app = Flask(__name__)
 
@@ -18,17 +17,29 @@ def calc_n_workers(n_angles, max_task_per_worker):
 		n += 1
 	return n
 
-@app.route('/status', methods=['GET'])
-def status():
-	image = ''
+
+def plot(name, time, lift, drag):
+	fig = plt.figure()
+	fig.suptitle(name, fontsize=20)
+	pl1 = fig.add_subplot(211)
+	pl1.set_title("Lift force")
+	pl1.plot(time, lift)
+	pl2 = fig.add_subplot(212)
+	pl2.plot(time, drag)
+	pl2.set_title("Drag force")
+	fig.savefig('plots/' + name + '.png')
+
+
+def get_base64_images():
+	images = ''
 	png_files = glob.glob('plots/*.png')
 	if png_files:
 		for png_f in png_files:
 			with open(png_f, 'rb') as f:
-				image = image + '_' + base64.b64encode(f.read())
-			check_call("sudo mv " + png_f + " plots/finished/" + png_f[6:], shell=True)
-		image = 'data' + image
-	return image
+				images = images + '_' + base64.b64encode(f.read())
+			check_call("sudo rm " + png_f, shell=True)
+	return images
+
 
 @app.route('/webUIBackend', methods=['GET'])
 def backend():
@@ -91,17 +102,12 @@ def backend():
 			time = np.array(data[::3], dtype=np.float)
 			lift = np.array(data[1::3], dtype=np.float)
 			drag = np.array(data[2::3], dtype=np.float)
-			fig = plt.figure()
-			fig.suptitle(name, fontsize=20)
-			pl1 = fig.add_subplot(211)
-			pl1.set_title("Lift force")
-			pl1.plot(time, lift)
-			pl2 = fig.add_subplot(212)
-			pl2.plot(time, drag)
-			pl2.set_title("Drag force")
-			fig.savefig('plots/' + name + '.png')
+			plot(name, time, lift, drag)
 
-	return "OK"
+	images = get_base64_images()
+
+	return 'data' + images
+
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', debug=True)

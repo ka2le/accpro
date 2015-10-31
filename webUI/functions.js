@@ -1,7 +1,5 @@
 
 var masterIP;
-var statusCheckTime = 10000;
-var counter = 0;
 
 function onloading(){}
 
@@ -21,29 +19,6 @@ function print(text, type){
 
 function connectToMaster(){
 	masterIP = document.getElementById("masterIP").value;
-	checkStatus();
-}
-
-function checkStatus(){
-	setTimeout(function(){ checkStatus(); }, statusCheckTime);
-	$.ajax({
-		type: "GET",
-		url: "http://" + masterIP + ":5000/status",
-		success: function(data) {
-			if(data != ""){
-				var dataArray= data.split("_");
-				if(dataArray[0] == "data"){
-					for (i = 1; i < dataArray.length; i++){
-						$("#step5").append('<img id="c'+counter+'" src="data:image/  png;base64,' + dataArray[i] +'">');
-						counter++;
-					}
-				}
-				delete dataArray;
-			}else{
-				console.log("No data")
-			}
-		}
-	});
 }
 
 function startSimulation(){
@@ -55,6 +30,8 @@ function startSimulation(){
 	var nodes = document.getElementById("nodes").value;
 	var levels = document.getElementById("levels").value;
 	var maxAngles = document.getElementById("maxAngles").value;
+
+	masterIP = document.getElementById("masterIP").value;
 
 	$.ajax({
 	type: "GET",
@@ -68,7 +45,18 @@ function startSimulation(){
 		maxAngles: maxAngles
 	},
 	success: function(data) {
-		checkStatus();
+		if(data != ""){
+				var dataArray= data.split("_");
+				console.log(dataArray.toString())
+				if(dataArray[0] == "data" && dataArray.length > 0){
+					for (i = 1; i < dataArray.length; i++){
+						$('#step5').append('<img src="data:image/  png;base64,' + dataArray[i] + '">');
+					}
+				}
+				delete dataArray;
+			}else{
+				console.log("No data")
+			}
 		}
 	});
 }

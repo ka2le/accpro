@@ -29,6 +29,7 @@ def airfoil(angle, nodes, levels):
 			with open("results/drag_ligt.m", 'r') as f:
 				result = f.read()
 			results.append({'name':xml[4:-4], 'data':result})
+			check_call("sudo rm -r results/" + xml, shell=True)
 
 		except CalledProcessError as e:
 			print e.returncode
