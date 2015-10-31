@@ -138,6 +138,7 @@ def backend():
 	for r in result.get():
 		for angle in r:
 			name = angle['name']
+			print "NAME OF ANGLE:   " + name
 			data = angle['data'][2:].split()[3:]
 			time = np.array(data[::3], dtype=np.float)
 			lift = np.array(data[1::3], dtype=np.float)
