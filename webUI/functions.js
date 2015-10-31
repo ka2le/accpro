@@ -1,34 +1,11 @@
 var masterIP;
-var statusCheckTime = 10000;
-var counter = 0;
 
 function onloading(){}
 
 function connectToMaster(){
 	masterIP = document.getElementById("masterIP").value;
-	checkStatus();
 }
 
-function checkStatus(){
-	setTimeout(function(){ checkStatus(); }, statusCheckTime);
-	$.ajax({
-		type: "GET",
-		url: "http://" + masterIP + ":5000/status",
-		success: function(data) {
-			if(data != ""){
-				var dataArray= data.split("_");
-				if(dataArray[0] == "data"){
-					for (i = 1; i < dataArray.length; i++){
-						$('#step5').append('<img id="c' + counter + '" src="data:image/  png;base64,' + dataArray[i] + '">');
-						counter++;
-					}
-				}
-			}else{
-				console.log("No data")
-			}
-		}
-	});
-}
 
 function startSimulation(){
 	document.getElementById("step2").className += " working";
@@ -51,6 +28,18 @@ function startSimulation(){
 		nodes: nodes,
 		levels: levels,
 		maxAngles: maxAngles
+		},
+	success: function(data) {
+			if(data != ""){
+				var dataArray= data.split("_");
+				if(dataArray[0] == "data"){
+					for (i = 1; i < dataArray.length; i++){
+						$('#step5').append('<img src="data:image/  png;base64,' + dataArray[i] + '">');
+					}
+				}
+			}else{
+				console.log("No data")
+			}
 		}
 	});
 }

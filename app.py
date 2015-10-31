@@ -35,28 +35,7 @@ def plot(name, time, lift, drag):
 	pl2.plot(time, drag)
 	pl2.set_title("Drag force")
 	fig.savefig('plots/' + name + '.png')
-
-
-# Converts every png in ./plots to base64-format
-# Every base64 string is delimited with a "_" and the full string starts with "data_"
-def convert_png_to_base64():
-	images = ''
-	png_files = glob.glob('plots/*.png')
-	if png_files:
-		for png_f in png_files:
-			with open(png_f, 'rb') as f:
-				images = images + '_' + base64.b64encode(f.read())
-			check_call("sudo mv " + png_f + " plots/finished/" + png_f[6:], shell=True)
-		images = 'data' + images
-	return images
-
-
-# Returns a list of base64 strings to the front end
-@app.route('/status', methods=['GET'])
-def status():
-	images = convert_png_to_base64();
-	return images
-
+	
 
 # Takes input from frontend. Add or removes workers if necessary
 # Send tasks to workers
@@ -134,6 +113,9 @@ def backend():
 
 	while result.ready() == False:
 		k = 1
+
+	images = ''
+
 	print 'Task done, now create plots'
 	for r in result.get():
 		for angle in r:
@@ -144,7 +126,12 @@ def backend():
 			lift = np.array(data[1::3], dtype=np.float)
 			drag = np.array(data[2::3], dtype=np.float)
 			plot(name, time, lift, drag)
-	return 'OK'
+			fname = 'plots/' + name + '.png'
+			with open(fname, 'rb') as f:
+				images = images + '_' + base64.b64encode(f.read())
+			check_call("sudo rm " + fname, shell=True)
+
+	return 'data' + images
 
 
 if __name__ == '__main__':
