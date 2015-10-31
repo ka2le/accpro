@@ -11,24 +11,26 @@ app.conf.CELERYD_PREFETCH_MULTIPLIER = 1
 # Takes one angle as input as an integer, which will generate mesh files, convert them to xml and then run airfoil on them
 @app.task
 def airfoil(angle, nodes, levels):
-
+	subprocess.check_call("sudo rm msh/*", shell=True)
+	subprocess.check_call("sudo rm geo/*", shell=True)
+	
 	results = []
 
 	print "Generate mesh files for angle " + str(angle)
 	check_call("./run.sh " + str(angle) + " " + str(angle) +" 1 " + str(nodes) + " " + str(levels) , shell=True)
 
 	print "Converting the generated mesh files to xml"
-	msh_files = glob.glob('msh/*.msh')
+	msh_files = glob.glob('msh/r*a' + str(angle) + 'n*.msh')
 	for msh in msh_files:
 		gmsh2xml(msh, msh[:-3] + 'xml')
 		print "Finished convert " + msh
-		check_call("sudo rm " + msh, shell=True)
-		print "Deleted mesh: " + msh
-		check_call("sudo rm geo/" + msh[6:-3] + 'geo' , shell=True)
-		print "Deleted geo: geo/" + msh[6:-3] + 'geo'
+		#check_call("sudo rm " + msh, shell=True)
+		#print "Deleted mesh: " + msh
+		#check_call("sudo rm geo/" + msh[6:-3] + 'geo' , shell=True)
+		#print "Deleted geo: geo/" + msh[6:-3] + 'geo'
 
 	print "Run airfiol on every xml file"
-	xml_files = glob.glob('msh/*.xml')
+	xml_files = glob.glob('msh/a*' + str(angle) 'n*.xml')
 	for xml in xml_files:
 		try:
 			check_call("sudo ./navier_stokes_solver/airfoil 10 0.0001 10. 0.2 ./" + xml, shell=True)
