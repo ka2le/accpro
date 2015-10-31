@@ -24,6 +24,8 @@ def airfoil(angle, nodes, levels):
 		print "Finished convert " + msh
 		check_call("sudo rm " + msh, shell=True)
 		print "Deleted mesh: " + msh
+		check_call("sudo rm geo/" + msh[4:-3] + 'geo' , shell=True)
+		print "Deleted geo: geo/" + msh[4:-3] + 'geo'
 
 	print "Run airfiol on every xml file"
 	xml_files = glob.glob('msh/*.xml')
@@ -38,5 +40,5 @@ def airfoil(angle, nodes, levels):
 
 		except CalledProcessError as e:
 			print e.returncode
-			
+
 	return results
