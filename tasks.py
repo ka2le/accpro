@@ -1,5 +1,5 @@
 import os, sys, glob
-from subprocess import CalledProcessError, check_call
+from subprocess import CalledProcessError, check_call, call
 from celery import Celery
 from dolfin_convert import gmsh2xml
 
@@ -15,8 +15,8 @@ def airfoil(i_angle, i_nodes, i_levels):
 	nodes = str(i_nodes)
 	levels = str(i_levels)
 
-	check_call("sudo rm msh/*a" + angle + "*", shell=True)
-	check_call("sudo rm geo/*a" + angle + "*", shell=True)
+	call("sudo rm msh/*a" + angle + "*", shell=True)
+	call("sudo rm geo/*a" + angle + "*", shell=True)
 	
 	results = []
 
