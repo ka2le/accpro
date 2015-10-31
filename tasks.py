@@ -1,5 +1,5 @@
 import os, sys, glob
-from subprocess import CalledProcessError, check_output, check_call
+from subprocess import CalledProcessError, check_call
 from celery import Celery
 from dolfin_convert import gmsh2xml
 
@@ -7,6 +7,8 @@ app = Celery('tasks', backend='amqp', broker='amqp://elias:pass@' + os.environ['
 app.conf.CELERY_ACKS_LATE = True
 app.conf.CELERYD_PREFETCH_MULTIPLIER = 1
 
+
+# Takes one angle as input as an integer, which will generate mesh files, convert them to xml and then run airfoil on them
 @app.task
 def airfoil(angle, nodes, levels):
 

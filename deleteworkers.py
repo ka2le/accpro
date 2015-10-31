@@ -1,7 +1,8 @@
-import os
-import subprocess
+import os, subprocess
 from novaclient.client import Client
  
+# This script is used for debugging when you want to delete all workers and start from scratch
+
 config = {'username':os.environ['OS_USERNAME'],
           'api_key':os.environ['OS_PASSWORD'],
           'project_id':os.environ['OS_TENANT_NAME'],
@@ -10,10 +11,9 @@ config = {'username':os.environ['OS_USERNAME'],
  
 nova = Client('2',**config)
 
-worker_prefix = 'lundestance-worker'
+worker_prefix = os.environ['worker_prefix']
 
 instances = nova.servers.list(search_opts={'name': worker_prefix})
-myid = "1205eee10f7c4aeebf180b3beb2ec60c"
 
 subprocess.check_call("sudo rabbitmqctl stop_app", shell=True)
 subprocess.check_call("sudo rabbitmqctl force_reset", shell=True)

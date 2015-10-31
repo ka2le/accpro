@@ -1,6 +1,7 @@
 import os, sys, subprocess
 from novaclient.client import Client
 
+# Replaces the line old in the file file with the new line new
 def substitute(new, old, file):
     f = open(file, "r")
     lines = f.readlines()
@@ -14,10 +15,15 @@ def substitute(new, old, file):
             f.write(new + '\n')
     f.close()
 
-def create_workers(n_workers):
 
-    worker_prefix = 'lundestance-worker'
-    keyname = 'lundekey'
+# Crates n_workers workers with key_name as keypair and worker_prefix as prefix name of each worker.
+# key_name and worker_prefix are enviroment variables set by userdata
+def create_workers(n_workers):
+    if not (0 <= n_workers <= 8):
+        n_workers = 1
+
+    worker_prefix = os.environ['worker_prefix']
+    keyname = os.environ['key_name']
 
     config = {'username':os.environ['OS_USERNAME'],
         'api_key':os.environ['OS_PASSWORD'],
@@ -33,7 +39,11 @@ def create_workers(n_workers):
     flavor = nc.flavors.find(name='m1.medium')
     network = nc.networks.find(label='ACC-Course-net')
     keypair = nc.keypairs.find(name=keyname)
+
+    # Get my ip
     master_ip = subprocess.check_output("wget -qO- http://ipecho.net/plain ; echo", shell=True).rstrip()
+    
+    # Set my ip as master_ip in the userdata that the workers use
     substitute('    - export master_ip="' + master_ip +'"', 'export master_ip=', 'userdata-worker.yml')
 
     
