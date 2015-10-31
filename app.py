@@ -37,7 +37,7 @@ def get_base64_images():
 		for png_f in png_files:
 			with open(png_f, 'rb') as f:
 				images = images + '_' + base64.b64encode(f.read())
-			check_call("sudo rm " + png_f, shell=True)
+			check_call("sudo mv " + png_f + " plots/finished/" + png_f[6:], shell=True)
 	return images
 
 
