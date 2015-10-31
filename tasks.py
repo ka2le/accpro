@@ -34,7 +34,7 @@ def airfoil(i_angle, i_nodes, i_levels):
 		#print "Deleted geo: geo/" + msh[6:-3] + 'geo'
 
 	print "Run airfiol on every xml file"
-	xml_files = glob.glob('msh/a*' + angle + 'n*.xml')
+	xml_files = glob.glob('msh/r*a' + angle + 'n*.xml')
 	for xml in xml_files:
 		try:
 			check_call("sudo ./navier_stokes_solver/airfoil 10 0.0001 10. 0.2 ./" + xml, shell=True)
