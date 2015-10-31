@@ -22,21 +22,21 @@ def airfoil(angle, nodes, levels):
 	for msh in msh_files:
 		gmsh2xml(msh, msh[:-3] + 'xml')
 		print "Finished convert " + msh
+		check_call("sudo rm " + msh, shell=True)
+		print "Deleted mesh: " + msh
 
 	print "Run airfiol on every xml file"
 	xml_files = glob.glob('msh/*.xml')
 	for xml in xml_files:
 		try:
 			check_call("sudo ./navier_stokes_solver/airfoil 10 0.0001 10. 0.2 ./" + xml, shell=True)
+			check_call("sudo rm " + xml, shell=True)
+			print "Deleted xml: " + xml
 			with open("results/drag_ligt.m", 'r') as f:
 				result = f.read()
 			results.append({'name':xml[4:-4], 'data':result})
 
 		except CalledProcessError as e:
 			print e.returncode
-
-	print "Delete .msh files:"
-	check_call("sudo rm msh/*", shell=True)
-	print "Delete .geo files:"
-	check_call("sudo rm geo/*", shell=True)
+			
 	return results
