@@ -33,5 +33,8 @@ def airfoil(angle, nodes, levels):
 		except CalledProcessError as e:
 			print e.returncode
 
+	print "Delete .msh files:"
 	check_call("sudo rm msh/*", shell=True)
+	print "Delete .geo files:"
+	check_call("sudo rm geo/*", shell=True)
 	return results

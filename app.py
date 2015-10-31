@@ -30,7 +30,7 @@ def plot(name, time, lift, drag):
 	fig.savefig('plots/' + name + '.png')
 
 
-def get_base64_images():
+def convert_png_to_base64():
 	images = ''
 	png_files = glob.glob('plots/*.png')
 	if png_files:
@@ -104,7 +104,7 @@ def backend():
 			drag = np.array(data[2::3], dtype=np.float)
 			plot(name, time, lift, drag)
 
-	images = get_base64_images()
+	images = convert_png_to_base64()
 
 	return 'data' + images
 
